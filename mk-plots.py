@@ -1,41 +1,69 @@
 import sys
 import json
+import re
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 def plot_all(dss):
 
-    xs = np.array(range(0,len(dss[0])))
+    n_tags = len(dss)
+    tags = list(dss.keys())
+    
+    n = len(dss[tags[0]][0])
+    xs = np.array(range(0,n))
 
-    hat_width = 9
+    hw = int(n/100)
+    if hw < 10:
+        hw = 10
+
+    hat_width = hw - 1 + (hw % 2)
+
+    print("%d => %d => %d" % (n, hw, hat_width))
+    
     tophat = np.ones(hat_width) / hat_width
 
     w2 = int((hat_width - 1) / 2)
-    cxs = np.array(range(w2,len(dss[0])-w2))
+    cxs = np.array(range(w2,n-w2))
+       
+    fig, axes = plt.subplots(3,n_tags, squeeze=False
+                             , sharex='all', sharey='row', figsize=(6,4), dpi=300)
     
-    fig, (score, delta, arm) = plt.subplots(3,1)
 
-    for ds in dss:
-        ss = np.array([ d['score'] for d in ds ])
-        score.plot(xs, ss)
-
-        ts = np.array([ d['draw'] for d in ds ])
-        delta.plot(cxs, np.convolve(ts, tophat, mode='valid'))
-
-        us = np.array([ d['arm'] for d in ds ])
-        arm.plot(cxs, np.convolve(us, tophat, mode='valid'))
-
-
+    axes[0,0].set_ylabel('Total')
+    axes[1,0].set_ylabel('Score')
+    axes[2,0].set_ylabel('Arm')
+    
+    col = 0
+    for tag in tags:
+        axes[0, col].set_title(tag)
         
+        for ds in dss[tag]:
+            ss = np.array([ d['score'] for d in ds ])
+            axes[0,col].plot(xs, ss, linewidth=0.5)
+
+            ts = np.array([ d['draw'] for d in ds ])
+            axes[1,col].plot(cxs, np.convolve(ts, tophat, mode='valid'), linewidth=0.5)
+
+            us = np.array([ d['arm'] for d in ds ])
+            axes[2,col].plot(cxs, np.convolve(us, tophat, mode='valid'), linewidth=0.5)
+        col += 1
+
     plt.show()
+
+    fig.savefig('foo.pdf',bbox_inches='tight')
+    fig.savefig('foo.png',bbox_inches='tight')
     
 def main(argv):
-    dss = []
+    dss = {}
     
     for file in argv[1:]:
+        tag = re.search('([^/]*?)-', file).group(1)
+        if tag not in dss:
+            dss[tag] = []
+
         with open(file, 'r') as fp:
-            dss.append(json.load(fp))
+            dss[tag].append(json.load(fp))
 
     plot_all(dss)
 
