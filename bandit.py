@@ -10,23 +10,42 @@ from bayesab   import BayesAB
 from ucb1      import UCB1
 from annealing import AnnealingEpsilonGreedy
 
-def all_tests():
+def std_tests():
+  algos = [   [ 'ucb1',    lambda: UCB1([],[]) ]
+              , [ 'aeg',     lambda: AnnealingEpsilonGreedy([],[]) ]
+              , [ 'bayes',   lambda: BayesAB(0)   ]
+  ]
+
   for (n_runs, n_steps) in [ (1000001,100), (100001,1000), (10001,10000), (1001,100000) ]:
     for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
-        run_tests([0.1, p], n_runs, n_steps)
+        run_tests('std', [0.1, p], n_runs, n_steps, algos)
 
+def cau_tests():
+  algos = [  [ 'bayes0',   lambda: BayesAB(0)    ]
+          ,  [ 'bayesm1',  lambda: BayesAB(-1.0) ]
+          ,  [ 'bayesp1',  lambda: BayesAB( 1.0) ]
+  ]
 
-def run_tests(means, n_runs, n_steps):
+  for (n_runs, n_steps) in [ (100001,100), (10001,1000), (1001,10000), (101,100000) ]:
+    for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
+        run_tests('cau', [0.1, p], n_runs, n_steps, algos)
+        
+def sm_tests():
+  algos = [  [ 'bayes',    lambda: BayesAB(0, False)  ]
+          ,  [ 'bayessm',  lambda: BayesAB(0, True)   ]
+  ]
 
-    print "means: %s, n_runs: %d, n_steps %d" % (str(means), n_runs, n_steps)
+  for (n_runs, n_steps) in [ (100001,100), (10001,1000), (1001,10000), (101,100000) ]:
+    for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
+        run_tests('sm', [0.1, p], n_runs, n_steps, algos)
+        
+def run_tests(tag, means, n_runs, n_steps, algos):
 
-    arms = map(lambda (mu): BernoulliArm(mu), means)
+    print("tag: %s, means: %s, n_steps: %d, n_runs %d"
+          % (tag, str(means), n_steps, n_runs))
+
+    arms = list(map(lambda mu: BernoulliArm(mu), means))
     
-    algos = [   [ 'ucb1',    lambda: UCB1([],[]) ]
-              , [ 'aeg',     lambda: AnnealingEpsilonGreedy([],[]) ]
-              , [ 'bayes',   lambda: BayesAB()   ]
-    ]
-
     report = {}
     
     for [name, mk_algo] in algos:
@@ -40,10 +59,10 @@ def run_tests(means, n_runs, n_steps):
 
             results = run_test(algo, arms, n_steps)
 
-            do_log  = i < 10
+            do_log  = i < 100
             if do_log:
-                logname = ("log/%s-%0.3f-%0.3f-%06f-%06d-%02d.json"
-                            % (name, means[0], means[1], n_runs, n_steps, i))
+                logname = ("log/%s-%0.3f-%0.3f-%06d-%06d-%s-%02d.json"
+                            % (tag, means[0], means[1], n_steps, n_runs, name, i))
                 with open(logname, 'w') as fp:
                     json.dump(results, fp)
 
@@ -51,8 +70,8 @@ def run_tests(means, n_runs, n_steps):
                 n_tries[r['arm']] += 1
             
             n = len(results)
-            ft = results[n  -1]['score']
-            ht = results[n/2-1]['score']
+            ft = results[n     -1]['score']
+            ht = results[int(n/2)]['score']
             
             ft_scores.append(ft)
             if ft > 0:
@@ -62,13 +81,13 @@ def run_tests(means, n_runs, n_steps):
 
         report[name] = mk_report(name, ft_scores, ht_ratios, n_tries)
 
-    filename = ("res/r-%0.3f-%0.3f-%06f-%06d.json"
-                % (means[0], means[1], n_runs, n_steps))
+    filename = ("res/%s-%0.3f-%0.3f-%06d-%06d.json"
+                % (tag, means[0], means[1], n_steps, n_runs))
     with open(filename, 'w') as fp:
         json.dump(report, fp)
-        print "wrote " + filename
+        print("wrote " + filename)
         
-    print "--\n"
+    print("--\n")
     
 def mk_report(name, ft_scores, ht_ratios, n_tries):
     i_med = int((len(ft_scores) - 1) / 2)
@@ -112,7 +131,9 @@ def run_test(algo, arms, n_steps):
 
     return results
 
-all_tests()
+sm_tests()
+#std_tests()
+#cau_tests()
 
 
 

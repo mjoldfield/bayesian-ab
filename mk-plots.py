@@ -30,9 +30,9 @@ def plot_all(dss):
                              , sharex='all', sharey='row', figsize=(6,4), dpi=300)
     
 
-    axes[0,0].set_ylabel('Total')
-    axes[1,0].set_ylabel('Score')
-    axes[2,0].set_ylabel('Arm')
+    axes[0,0].set_ylabel('Total',         fontsize=10)
+    axes[1,0].set_ylabel('Average Score', fontsize=8)
+    axes[2,0].set_ylabel('Average Coin',  fontsize=12)
     
     col = 0
     for tag in tags:
@@ -52,13 +52,15 @@ def plot_all(dss):
     plt.show()
 
     fig.savefig('foo.pdf',bbox_inches='tight')
-    fig.savefig('foo.png',bbox_inches='tight')
+    #fig.savefig('foo.png',bbox_inches='tight')
     
 def main(argv):
     dss = {}
     
     for file in argv[1:]:
-        tag = re.search('([^/]*?)-', file).group(1)
+        bits = file.split('-')
+        tag = bits[-2]
+
         if tag not in dss:
             dss[tag] = []
 

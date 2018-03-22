@@ -15,7 +15,9 @@ def log_binomial(n,k):
   return log_n_fac(n) - (log_n_fac(k) + log_n_fac(n - k))
 
 class BayesAB():
-  def __init__(self):
+  def __init__(self, caution, smooth=False):
+    self.caution = caution
+    self.smooth  = smooth
     return
 
   def initialize(self, n_arms):
@@ -44,7 +46,29 @@ class BayesAB():
     
     logph2 = -(math.log(1 + n1) + math.log(1 + n2))
 
-    if (logph2 < logph1):
+    # log(pr(H2) / pr(H1))
+    # caution is a fiddle factor which makes H1 more probable
+    # i.e. the algorithm becomes more cautious 
+    log_ratio = logph2 - (logph1 + self.caution)
+
+    if self.smooth:
+      # choose whether to explore by randomly picking 
+      # t is a small number to avoid numerical issues
+      # - if either prob is less than t then don't sample
+      t = 1e-6
+      threshold = math.log((1-t) / t)
+    else:
+      # hard transition: just do what's more probable
+      threshold = 0.0
+
+    if   log_ratio > threshold:
+      explore = False
+    elif log_ratio < -threshold:
+      explore = True
+    else:
+      explore = random.random() > (1.0 / (1.0 + math.exp(log_ratio)))
+
+    if explore:
       # not sure which is best, so get more samples from rarer source
       if (n1 < n2):
         return 0
