@@ -38,6 +38,17 @@ def sm_tests():
   for (n_runs, n_steps) in [ (100001,100), (10001,1000), (1001,10000), (101,100000) ]:
     for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
         run_tests('sm', [0.1, p], n_runs, n_steps, algos)
+
+def bozo_tests():
+  algos = [  [ 'norm',    lambda: BayesAB(0, False)  ]
+          ,  [ 'smth',    lambda: BayesAB(0, True,  False)   ]
+          ,  [ 'bozo',    lambda: BayesAB(0, True,  True)    ]
+  ]
+
+  for (n_runs, n_steps) in [ (100001,100), (10001,1000), (1001,10000), (101,100000) ]:
+    for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
+        run_tests('bozo', [0.1, p], n_runs, n_steps, algos)
+
         
 def run_tests(tag, means, n_runs, n_steps, algos):
 
@@ -131,9 +142,8 @@ def run_test(algo, arms, n_steps):
 
     return results
 
-sm_tests()
+#sm_tests()
 #std_tests()
 #cau_tests()
-
-
+bozo_tests()
 

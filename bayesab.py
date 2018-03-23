@@ -15,9 +15,10 @@ def log_binomial(n,k):
   return log_n_fac(n) - (log_n_fac(k) + log_n_fac(n - k))
 
 class BayesAB():
-  def __init__(self, caution, smooth=False):
+  def __init__(self, caution, smooth=False, bozo=False):
     self.caution = caution
     self.smooth  = smooth
+    self.bozo    = bozo
     return
 
   def initialize(self, n_arms):
@@ -51,6 +52,9 @@ class BayesAB():
     # i.e. the algorithm becomes more cautious 
     log_ratio = logph2 - (logph1 + self.caution)
 
+    # log_ratio +ve => h2 more probable than h1
+    #               => good to exploit and not explore
+
     if self.smooth:
       # choose whether to explore by randomly picking 
       # t is a small number to avoid numerical issues
@@ -58,7 +62,7 @@ class BayesAB():
       t = 1e-6
       threshold = math.log((1-t) / t)
     else:
-      # hard transition: just do what's more probable
+      # hard transition: just do what's most probable
       threshold = 0.0
 
     if   log_ratio > threshold:
@@ -66,7 +70,11 @@ class BayesAB():
     elif log_ratio < -threshold:
       explore = True
     else:
-      explore = random.random() > (1.0 / (1.0 + math.exp(log_ratio)))
+      ph2     = 1.0 / (1.0 + math.exp(-log_ratio))
+      explore = random.random() > ph2   # if ph2 -> 1, explore -> False
+
+      if self.bozo:
+        explore = not(explore)
 
     if explore:
       # not sure which is best, so get more samples from rarer source
