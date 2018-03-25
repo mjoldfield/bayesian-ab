@@ -34,11 +34,13 @@ def cau_tests():
 def la_tests():
   algos = [  [ 'b',  lambda: BayesAB(0, False, False, False)    ]
           ,  [ 'l',  lambda: BayesAB(0, False, False, True)     ]
+          ,  [ 'z',  lambda: BayesAB(0, False, True,  True)     ]
   ]
 
   for (n_runs, n_steps) in [ (100001,100), (10001,1000), (1001,10000), (101,100000) ]:
     for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
         run_tests('la', [0.1, p], n_runs, n_steps, algos)
+        run_tests('la', [p, 0.1], n_runs, n_steps, algos)
 
         
 def run_tests(tag, means, n_runs, n_steps, algos):

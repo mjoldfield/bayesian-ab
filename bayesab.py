@@ -78,16 +78,21 @@ class BayesAB():
         else:
           delta = 0
 
-          # best(ish) guess at evidence ratio after the next toss
-          ratio1 = self.evidence_ratio(n1 + 1, k1 + delta, n2, k2)
-          ratio2 = self.evidence_ratio(n1, k1, n2 + 1, k2 + delta)
+        # best(ish) guess at evidence ratio after the next toss
+        ratio1 = self.evidence_ratio(n1 + 1, k1 + delta, n2, k2)
+        ratio2 = self.evidence_ratio(n1, k1, n2 + 1, k2 + delta)
 
-          if   (ratio1 > ratio2):
-            return 0
-          elif (ratio2 < ratio1):
-            return 1
+        if (self.bozo):
+          a = ratio1
+          ratio1 = ratio2
+          ratio2 = a
+
+        if   (ratio1 > ratio2):
+          return 0
+        elif (ratio1 < ratio2):
+          return 1
       else:
-        if (n1 < n2):
+        if   (n1 < n2):
           return 0
         elif (n1 > n2):
           return 1
