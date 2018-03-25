@@ -43,15 +43,15 @@ def plot_all(dss):
         for ds in dss[tag]:
             ss = np.array([ d['score'] for d in ds ])
             axes[0,col].plot(xs, ss
-                             , linewidth=0.5, alpha=0.3)
+                             , linewidth=0.25, alpha=0.3)
 
             ts = np.array([ d['draw'] for d in ds ])
             axes[1,col].plot(cxs, np.convolve(ts, tophat, mode='valid')
-                             , linewidth=0.5, alpha=0.3)
+                             , linewidth=0.25, alpha=0.3)
 
             us = np.array([ d['arm'] for d in ds ])
             axes[2,col].plot(cxs, np.convolve(us, tophat, mode='valid')
-                             , linewidth=0.5, alpha=0.3)
+                             , linewidth=0.25, alpha=0.3)
         col += 1
 
     plt.show()
