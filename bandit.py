@@ -11,37 +11,16 @@ from ucb1      import UCB1
 from annealing import AnnealingEpsilonGreedy
 
 def std_tests():
-  algos = [   [ 'ucb1',    lambda: UCB1([],[]) ]
+  algos = [   [ 'ucb1',      lambda: UCB1([],[]) ]
               , [ 'aeg',     lambda: AnnealingEpsilonGreedy([],[]) ]
-              , [ 'bayes',   lambda: BayesAB(0)   ]
+              , [ 'bayes',   lambda: BayesAB(False)   ]
+              , [ 'bla',     lambda: BayesAB(True)   ]
   ]
 
-  for (n_runs, n_steps) in [ (1000001,100), (100001,1000), (10001,10000), (1001,100000) ]:
+  for (n_runs, n_steps) in [ (100001,100), (100001,1000) ]: # [ (1000001,100), (100001,1000) ]: #, (10001,10000), (1001,100000) ]:
     for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
         run_tests('std', [0.1, p], n_runs, n_steps, algos)
         run_tests('std', [p, 0.1], n_runs, n_steps, algos)
-
-def cau_tests():
-  algos = [  [ 'bayes0',   lambda: BayesAB(0)    ]
-          ,  [ 'bayesm1',  lambda: BayesAB(-1.0) ]
-          ,  [ 'bayesp1',  lambda: BayesAB( 1.0) ]
-  ]
-
-  for (n_runs, n_steps) in [ (100001,100), (10001,1000), (1001,10000), (101,100000) ]:
-    for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
-        run_tests('cau', [0.1, p], n_runs, n_steps, algos)
-
-def la_tests():
-  algos = [  [ 'b',  lambda: BayesAB(0, False, False, False)    ]
-          ,  [ 'l',  lambda: BayesAB(0, False, False, True)     ]
-          ,  [ 'z',  lambda: BayesAB(0, False, True,  True)     ]
-  ]
-
-  for (n_runs, n_steps) in [ (100001,100), (10001,1000), (1001,10000), (101,100000) ]:
-    for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
-        run_tests('la', [0.1, p], n_runs, n_steps, algos)
-        run_tests('la', [p, 0.1], n_runs, n_steps, algos)
-
         
 def run_tests(tag, means, n_runs, n_steps, algos):
 
@@ -133,6 +112,4 @@ def run_test(algo, arms, n_steps):
 
     return results
 
-#std_tests()
-#cau_tests()
-la_tests()
+std_tests()
