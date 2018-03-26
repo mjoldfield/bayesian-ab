@@ -13,8 +13,9 @@ from annealing import AnnealingEpsilonGreedy
 def std_tests():
   algos = [   [ 'ucb1',      lambda: UCB1([],[]) ]
               , [ 'aeg',     lambda: AnnealingEpsilonGreedy([],[]) ]
-              , [ 'bayes',   lambda: BayesAB(False)   ]
-              , [ 'bla',     lambda: BayesAB(True)   ]
+              , [ 'bayes',   lambda: BayesAB(False)      ]
+              , [ 'bla',     lambda: BayesAB(True)       ]
+              , [ 'ble',     lambda: BayesAB(True, True) ]
   ]
 
   for (n_runs, n_steps) in [ (101,100), (101,1000) ]: # [ (1000001,100), (100001,1000) ]: #, (10001,10000), (1001,100000) ]:

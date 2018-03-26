@@ -15,8 +15,9 @@ def log_binomial(n,k):
   return log_n_fac(n) - (log_n_fac(k) + log_n_fac(n - k))
 
 class BayesAB():
-  def __init__(self, lookahead=False):
-    self.lookahead = lookahead
+  def __init__(self, lookahead=False, force_explore=False):
+    self.lookahead     = lookahead
+    self.force_explore = force_explore
     return
 
   def initialize(self, n_arms):
@@ -44,7 +45,7 @@ class BayesAB():
     # log_ratio +ve => h2 more probable than h1
     #               => good to exploit and not explore
 
-    explore = log_ratio < 0.0
+    explore = self.force_explore or (log_ratio < 0.0)
 
     if explore:
       # not sure which is best, so get more samples from rarer source
