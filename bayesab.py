@@ -39,7 +39,7 @@ class BayesAB():
     k2 = a2['k']
 
     log_ratio = self.evidence_ratio(n1,k1, n2,k2)
-    self.latest_ratio = 1.0 / (1.0 + math.exp(-log_ratio))
+    self.pr_h2 = 1.0 / (1.0 + math.exp(-log_ratio))
 
     # log_ratio +ve => h2 more probable than h1
     #               => good to exploit and not explore
@@ -92,4 +92,4 @@ class BayesAB():
     return log_ratio
 
   def diag(self):
-    return { 'ph2_ph1': self.latest_ratio }
+    return { 'pr(h2)': self.pr_h2 }

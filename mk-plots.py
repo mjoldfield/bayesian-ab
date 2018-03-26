@@ -30,13 +30,15 @@ def plot_all(dss):
 
     axes[0,0].set_ylabel('Total',         fontsize=8)
 
-    axes[1,0].set_ylabel('Average Score', fontsize=8)
+    axes[1,0].set_ylabel('pr(H_2|D)',     fontsize=8)
 
     axes[2,0].set_ylabel('Average Coin',  fontsize=8)
     
     col = 0
     for tag in tags:
         axes[0, col].set_title(tag)
+        axes[1, col].set_autoscaley_on(False)
+        axes[1, col].set_ylim([-0.1,1.1])
         axes[2, col].set_autoscaley_on(False)
         axes[2, col].set_ylim([-0.1,1.1])
         
@@ -45,9 +47,11 @@ def plot_all(dss):
             axes[0,col].plot(xs, ss
                              , linewidth=0.25, alpha=0.3)
 
-            ts = np.array([ d['draw'] for d in ds ])
-            axes[1,col].plot(cxs, np.convolve(ts, tophat, mode='valid')
-                             , linewidth=0.25, alpha=0.3)
+            k = 'pr(h2)'
+            if k in ds[0]:
+                ts = np.array([ d[k] for d in ds ])
+                axes[1,col].plot(cxs, np.convolve(ts, tophat, mode='valid')
+                                 , linewidth=0.25, alpha=0.3)
 
             us = np.array([ d['arm'] for d in ds ])
             axes[2,col].plot(cxs, np.convolve(us, tophat, mode='valid')
