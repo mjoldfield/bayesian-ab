@@ -17,7 +17,7 @@ def std_tests():
               , [ 'bla',     lambda: BayesAB(True)   ]
   ]
 
-  for (n_runs, n_steps) in [ (100001,100), (100001,1000) ]: # [ (1000001,100), (100001,1000) ]: #, (10001,10000), (1001,100000) ]:
+  for (n_runs, n_steps) in [ (101,100), (101,1000) ]: # [ (1000001,100), (100001,1000) ]: #, (10001,10000), (1001,100000) ]:
     for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
         run_tests('std', [0.1, p], n_runs, n_steps, algos)
         run_tests('std', [p, 0.1], n_runs, n_steps, algos)
@@ -32,8 +32,7 @@ def run_tests(tag, means, n_runs, n_steps, algos):
     report = {}
     
     for [name, mk_algo] in algos:
-        ft_scores = []
-        ht_ratios = []
+        scores = []
 
         n_tries = [0,0]
         
@@ -53,16 +52,13 @@ def run_tests(tag, means, n_runs, n_steps, algos):
                 n_tries[r['arm']] += 1
             
             n = len(results)
-            ft = results[n     -1]['score']
-            ht = results[int(n/2)]['score']
+            score = results[n-1]['score']
             
-            ft_scores.append(ft)
-            if ft > 0:
-                ht_ratios.append(ht / ft)
+            scores.append(score)
 
-        ft_scores.sort()
+        scores.sort()
 
-        report[name] = mk_report(name, ft_scores, ht_ratios, n_tries)
+        report[name] = mk_report(name, scores, n_tries)
 
     filename = ("res/%s-%0.3f-%0.3f-%06d-%06d.json"
                 % (tag, means[0], means[1], n_steps, n_runs))
@@ -72,24 +68,23 @@ def run_tests(tag, means, n_runs, n_steps, algos):
         
     print("--\n")
     
-def mk_report(name, ft_scores, ht_ratios, n_tries):
-    i_med = int((len(ft_scores) - 1) / 2)
+def mk_report(name, scores, n_tries):
+    i_med = int((len(scores) - 1) / 2)
     i_lq  = i_med - int(i_med / 2)
     i_uq  = i_med + int(i_med / 2)
 
-    mean_ft = sum(ft_scores) / len(ft_scores)
-    ht_ft   = sum(ht_ratios) / len(ht_ratios)
+    score_mean = sum(scores) / len(scores)
+
+    f_arm0  = float(n_tries[1]) / float(n_tries[0] + n_tries[1])
     
-    f_arm0  = float(n_tries[0]) / float(n_tries[0] + n_tries[1])
+    print("%-12s  %6.3f   %8d %8d %8d  %12.3f"
+          % (name, f_arm0, scores[i_lq], scores[i_med], scores[i_uq], score_mean))
     
-    print("%-12s  %6.3f   %6.3f  %8d %8d %8d  %12.3f"
-          % (name, f_arm0, ht_ft, ft_scores[i_lq], ft_scores[i_med], ft_scores[i_uq], mean_ft))
-    
-    return { 'f_arm0': f_arm0
-             , 'ft_score_lq': ft_scores[i_lq]
-             , 'ft_score_med': ft_scores[i_med]
-             , 'ft_score_uq': ft_scores[i_uq]
-             , 'ft_score_mean': mean_ft
+    return { 'f_arm0':       f_arm0
+             , 'score_lq':   scores[i_lq]
+             , 'score_med':  scores[i_med]
+             , 'score_uq':   scores[i_uq]
+             , 'score_mean': score_mean
     }
 
     
