@@ -23,8 +23,7 @@ class BayesAB():
     if (n_arms != 2):
       raise ValueError("Can only handle n_arms == 2")
     self.stats = [ { 'n': 0, 'k': 0 } for i in range(n_arms) ]
-    
-    
+        
   def update(self, i_arm, score):
     self.stats[i_arm]['n'] += 1
     if score:
@@ -40,6 +39,7 @@ class BayesAB():
     k2 = a2['k']
 
     log_ratio = self.evidence_ratio(n1,k1, n2,k2)
+    self.latest_ratio = 1.0 / (1.0 + math.exp(-log_ratio))
 
     # log_ratio +ve => h2 more probable than h1
     #               => good to exploit and not explore
@@ -90,3 +90,6 @@ class BayesAB():
     log_ratio = logph2 - logph1
 
     return log_ratio
+
+  def diag(self):
+    return { 'ph2_ph1': self.latest_ratio }

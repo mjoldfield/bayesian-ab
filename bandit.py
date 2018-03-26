@@ -95,6 +95,8 @@ def run_test(algo, arms, n_steps):
     
     results = []
 
+    has_diags = callable(getattr(algo, 'diag', None))
+
     score   = 0
     for t in range(n_steps):
         i_arm = algo.select_arm()
@@ -103,7 +105,12 @@ def run_test(algo, arms, n_steps):
         algo.update(i_arm, d)
 
         score += d
-        results.append({ 'arm': i_arm, 'draw': d, 'score': score })
+        h = { 'arm': i_arm, 'draw': d, 'score': score }
+
+        if has_diags:
+          h.update(algo.diag())
+
+        results.append(h)
 
     return results
 
