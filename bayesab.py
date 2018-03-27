@@ -14,10 +14,18 @@ def log_n_fac(n):
 def log_binomial(n,k):
   return log_n_fac(n) - (log_n_fac(k) + log_n_fac(n - k))
 
+def select_on(a,b):
+  if   b > a:
+    return 1
+  elif b < a:
+    return 0
+  else:
+    return random.randint(0,1)
+
+
 class BayesAB():
-  def __init__(self, lookahead=False, force_explore=False):
-    self.lookahead     = lookahead
-    self.force_explore = force_explore
+  def __init__(self, exp_method=''):
+    self.exp_method    = exp_method
     return
 
   def initialize(self, n_arms):
@@ -45,11 +53,30 @@ class BayesAB():
     # log_ratio +ve => h2 more probable than h1
     #               => good to exploit and not explore
 
-    explore = self.force_explore or (log_ratio < 0.0)
+    explore = log_ratio < 0.0
 
     if explore:
-      # not sure which is best, so get more samples from rarer source
-      if (self.lookahead):
+      if   self.exp_method == 'random':
+        return random.randint(0,1)
+      elif self.exp_method == 'min_n':
+        return select_on(n2, n1)
+      elif self.exp_method == 'max_tr':
+        if (2 * (k1 + k2) >= (n1 + n2)):
+          q1,q2 = k1,k2
+        else:
+          q1,q2 = n1 - k1, n2 - k2
+
+        return 1 - select_on(q1 * n2, q2 * n1)
+
+      elif self.exp_method == 'max_tr1':
+        if (2 * (k1 + k2) >= (n1 + n2)):
+          q1,q2 = k1,k2
+        else:
+          q1,q2 = n1 - k1, n2 - k2
+
+        return 1 - select_on((q1 + 1) * (n2 + 2), (q2 + 1) * (n1 + 2))
+      
+      elif self.exp_method == 'min_ph2':
         # delta is most likely outcome of the toss
         if (2 * (k1 + k2) >= (n1 + n2)):
           delta = 1
@@ -61,22 +88,13 @@ class BayesAB():
         ratio2 = self.evidence_ratio(n1, k1, n2 + 1, k2 + delta)
 
         # choose arm which makes H1 more likely!
-        if   (ratio2 > ratio1):
-          return 0
-        elif (ratio2 < ratio1):
-          return 1
-      else:
-        if   (n1 < n2):
-          return 0
-        elif (n1 > n2):
-          return 1
-    else:
-      if   (k1 * n2 < k2 * n1):
-        return 1
-      elif (k1 * n2 > k2 * n1):
-        return 0
+        return select_on(ratio2, ratio1)
 
-    return random.randint(0,1)
+      else:
+        raise Exception('Invalid exploration type')
+
+    else:
+      return select_on(k1 * n2, k2 * n1)
 
   def evidence_ratio(self, n1, k1, n2, k2):
 
