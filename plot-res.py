@@ -110,9 +110,7 @@ def main(argv):
         for algo in sorted(list(ds.keys()), key=tag_order):
             v = ds[algo]
 
-            f_good_arm = v['f_arm0']
-            if p0 > p1:
-                f_good_arm = 1.0 - f_good_arm
+            f_good_arm = v['f_good_arm']
 
             k = (tag_name(algo)
                  , pp_warmup(n_warmup)

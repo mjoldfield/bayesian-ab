@@ -10,6 +10,9 @@ from bayesab   import BayesAB
 from ucb1      import UCB1
 from annealing import AnnealingEpsilonGreedy
 
+def argmax(xs):
+  return max(enumerate(xs), key=lambda x:x[1])[0]
+
 def std_tests():
   algos = [   [ 'ucb1',      lambda: UCB1([],[]) ]
               , [ 'aeg',     lambda: AnnealingEpsilonGreedy([],[]) ]
@@ -20,7 +23,7 @@ def std_tests():
               , [ 'rnd',     lambda: BayesAB('random')  ]
   ]
 
-  n_runs = 10000
+  n_runs = 100
   for n_warmup in [ 0, 1000 ]:
     for n_steps in [ 100, 1000, 10000 ]:
       for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
@@ -31,7 +34,8 @@ def run_tests(tag, means, n_warmup, n_runs, n_steps, algos):
     print("tag: %s, warmup: %d, means: %s, n_steps: %d, n_runs 2 * %d = %d"
           % (tag, n_warmup, str(means), n_steps, n_runs, 2 * n_runs))
 
-    arms = list(map(lambda mu: BernoulliArm(mu), means))
+    arms = [ BernoulliArm(mu) for mu in means ]
+    best_arm = argmax(means)
     
     report = {}
     
@@ -80,7 +84,7 @@ def run_tests(tag, means, n_warmup, n_runs, n_steps, algos):
 
         scores.sort()
 
-        report[name] = mk_report(name, scores, score_by_swap, n_tries)
+        report[name] = mk_report(name, scores, score_by_swap, n_tries, best_arm)
 
     filename = ("res/%s-%06d-%0.3f-%0.3f-%06d-%06d.json"
                 % (tag, n_warmup, means[0], means[1], n_steps, n_runs))
@@ -90,7 +94,7 @@ def run_tests(tag, means, n_warmup, n_runs, n_steps, algos):
         
     print("--\n")
     
-def mk_report(name, scores, score_by_swap, n_tries):
+def mk_report(name, scores, score_by_swap, n_tries, best_arm):
     n = len(scores)
 
     i_med = int((n - 1) / 2)
@@ -99,16 +103,19 @@ def mk_report(name, scores, score_by_swap, n_tries):
 
     score_mean = sum(scores) / n
 
-    f_arm0  = float(n_tries[1]) / float(n_tries[0] + n_tries[1])
+    tot_tries  = float(n_tries[0] + n_tries[1])
+
+    f_bestarm  = float(n_tries[best_arm]) / tot_tries
+    f_arm1     = float(n_tries[1])        / tot_tries
 
     norm_score = score_by_swap['n'] / (0.5 * n)
     swap_score = score_by_swap['r'] / (0.5 * n)
     
-    print("%-12s  %12.3f %12.3f     %6.3f     %8d %8d %8d    %12.3f"
-          % (name, norm_score, swap_score, f_arm0,
-             scores[i_lq], scores[i_med], scores[i_uq], score_mean))
+    print("%-12s %8.3f %8.3f    %6.3f   %6d %6d %6d   %6.3f   %6.3f"
+          % (name, norm_score, swap_score, f_arm1,
+             scores[i_lq], scores[i_med], scores[i_uq], score_mean, f_bestarm))
     
-    return { 'f_arm0':       f_arm0
+    return { 'f_arm1':       f_arm1
              , 'score_lq':   scores[i_lq]
              , 'score_med':  scores[i_med]
              , 'score_uq':   scores[i_uq]
