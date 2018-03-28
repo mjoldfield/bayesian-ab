@@ -20,14 +20,16 @@ def std_tests():
               , [ 'rnd',     lambda: BayesAB('random')  ]
   ]
 
-  for (n_runs, n_steps) in [ (100000,100), (100000, 1000) ]:
-    for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
-        run_tests('std', [0.1, p], n_runs, n_steps, algos)
+  n_runs = 10000
+  for n_warmup in [ 0, 1000 ]:
+    for n_steps in [ 100, 1000, 10000 ]:
+      for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
+        run_tests('std', [0.1, p], n_warmup, n_runs, n_steps, algos)
         
-def run_tests(tag, means, n_runs, n_steps, algos):
+def run_tests(tag, means, n_warmup, n_runs, n_steps, algos):
 
-    print("tag: %s, means: %s, n_steps: %d, n_runs 2 * %d = %d"
-          % (tag, str(means), n_steps, n_runs, 2 * n_runs))
+    print("tag: %s, warmup: %d, means: %s, n_steps: %d, n_runs 2 * %d = %d"
+          % (tag, n_warmup, str(means), n_steps, n_runs, 2 * n_runs))
 
     arms = list(map(lambda mu: BernoulliArm(mu), means))
     
@@ -48,11 +50,13 @@ def run_tests(tag, means, n_runs, n_steps, algos):
             if swap:
               arms_used = list(reversed(arms))
               arms_tag  = "r"
+              warmup_arm = 1
             else:
               arms_used = arms
               arms_tag  = "n"
+              warmup_arm = 0
               
-            results = run_test(algo, arms_used, n_steps)
+            results = run_test(algo, arms_used, [(warmup_arm, n_warmup)] , n_steps)
 
             if swap:
               for r in results:
@@ -60,8 +64,8 @@ def run_tests(tag, means, n_runs, n_steps, algos):
 
             do_log  = i < 100
             if do_log:
-                logname = ("log/%s-%0.3f-%0.3f-%06d-%06d-%s-%s-%02d.json"
-                            % (tag, means[0], means[1], n_steps, n_runs, name, arms_tag, i))
+                logname = ("log/%s-%06d-%0.3f-%0.3f-%06d-%06d-%s-%s-%02d.json"
+                            % (tag, n_warmup, means[0], means[1], n_steps, n_runs, name, arms_tag, i))
                 with open(logname, 'w') as fp:
                     json.dump(results, fp)
 
@@ -78,8 +82,8 @@ def run_tests(tag, means, n_runs, n_steps, algos):
 
         report[name] = mk_report(name, scores, score_by_swap, n_tries)
 
-    filename = ("res/%s-%0.3f-%0.3f-%06d-%06d.json"
-                % (tag, means[0], means[1], n_steps, n_runs))
+    filename = ("res/%s-%06d-%0.3f-%0.3f-%06d-%06d.json"
+                % (tag, n_warmup, means[0], means[1], n_steps, n_runs))
     with open(filename, 'w') as fp:
         json.dump(report, fp)
         print("wrote " + filename)
@@ -112,7 +116,7 @@ def mk_report(name, scores, score_by_swap, n_tries):
     }
 
     
-def run_test(algo, arms, n_steps):
+def run_test(algo, arms, warmups, n_steps):
 
     n_arms = len(arms)
     algo.initialize(n_arms)
@@ -121,6 +125,12 @@ def run_test(algo, arms, n_steps):
 
     has_diags = callable(getattr(algo, 'diag', None))
 
+    for (arm,n) in warmups:
+      for i in range(n):
+        d = arms[arm].draw()
+        algo.update(arm, d)
+
+    
     score   = 0
     for t in range(n_steps):
         i_arm = algo.select_arm()

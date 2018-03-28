@@ -68,7 +68,7 @@ def main(argv):
     
     for file in argv[1:]:
         bits = file.split('-')
-        tag = bits[-2]
+        tag = bits[-3]
 
         if tag not in dss:
             dss[tag] = []
