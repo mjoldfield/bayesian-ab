@@ -5,6 +5,28 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 
+def tag_info(tag):
+    i = { 'aeg':   (50, "AEG")
+        , 'ucb1':  (60, "UCB 1")
+        , 'bayes': (10,  "Bayes 1")
+        , 'rnd':   (20,  "Bayes 2")
+        , 'blr':   (30, "Gr Exp 1")
+        , 'bls':   (40, "Gr Exp 2")
+    }
+
+    order, name = i[tag]
+    h = { 'name': name, 'order': order }
+    return h
+
+def tag_name(tag):
+    ti = tag_info(tag)
+    return ti['name']
+
+def tag_order(tag):
+    ti = tag_info(tag)
+    return ti['order']
+
+
 def plot_all(dss):
 
     n_tags = len(dss)
@@ -23,45 +45,52 @@ def plot_all(dss):
 
     w2 = int((hat_width - 1) / 2)
     cxs = np.array(range(w2,n-w2))
-       
-    fig, axes = plt.subplots(3,n_tags, squeeze=False
-                             , sharex='all', sharey='row', figsize=(6,4), dpi=300)
+
+    for fs,dpi,file in [((6,4),1200,'foo.pdf'), ((6,4),150,'foo.png')]:
+
+        fig, axes = plt.subplots(3,n_tags, squeeze=False
+                                 , sharex='all', sharey='row', figsize=fs, dpi=dpi)
     
+        axes[0,0].set_ylabel('Total Score',   fontsize=7)        
+        axes[1,0].set_ylabel('pr(H_2|D)',     fontsize=7)
+        axes[2,0].set_ylabel('Average Coin',  fontsize=7)
 
-    axes[0,0].set_ylabel('Total',         fontsize=8)
+        col = 0
+        for tag in sorted(tags, key=tag_order):
+            axes[0, col].set_title(tag_name(tag), fontsize=8)
+            axes[1, col].set_autoscaley_on(False)
+            axes[1, col].set_ylim([-0.1,1.1])
+            axes[2, col].set_autoscaley_on(False)
+            axes[2, col].set_ylim([-0.1,1.1])
 
-    axes[1,0].set_ylabel('pr(H_2|D)',     fontsize=8)
+            for i in [0,1,2]:
+                axes[i,col].tick_params(axis='both', which='both', labelsize=6)
 
-    axes[2,0].set_ylabel('Average Coin',  fontsize=8)
+            for ds in dss[tag]:
+                plot_thing(axes[0,col],  xs, ds, 'score',  None,   None)
+                plot_thing(axes[1,col], cxs, ds, 'pr(h2)', tophat, 0.01)
+                plot_thing(axes[2,col], cxs, ds, 'arm',    tophat, 0.01)
+            
+            col += 1
+
+        #plt.show()
+
+        fig.savefig(file,bbox_inches='tight')
+
+def plot_thing(axis, xs, ds, k, smooth, jitter):
+    if k not in ds[0]:
+        return
     
-    col = 0
-    for tag in tags:
-        axes[0, col].set_title(tag)
-        axes[1, col].set_autoscaley_on(False)
-        axes[1, col].set_ylim([-0.1,1.1])
-        axes[2, col].set_autoscaley_on(False)
-        axes[2, col].set_ylim([-0.1,1.1])
+    ys = np.array([ d[k] for d in ds ])
+    
+    if smooth is not None:
+        ys = np.convolve(ys, smooth, mode='valid')
+
+    if jitter is not None:
+        jits = np.random.normal(0, jitter, ys.shape)
+        ys += jits
         
-        for ds in dss[tag]:
-            ss = np.array([ d['score'] for d in ds ])
-            axes[0,col].plot(xs, ss
-                             , linewidth=0.25, alpha=0.3)
-
-            k = 'pr(h2)'
-            if k in ds[0]:
-                ts = np.array([ d[k] for d in ds ])
-                axes[1,col].plot(cxs, np.convolve(ts, tophat, mode='valid')
-                                 , linewidth=0.25, alpha=0.3)
-
-            us = np.array([ d['arm'] for d in ds ])
-            axes[2,col].plot(cxs, np.convolve(us, tophat, mode='valid')
-                             , linewidth=0.25, alpha=0.3)
-        col += 1
-
-    plt.show()
-
-    fig.savefig('foo.pdf',bbox_inches='tight')
-    #fig.savefig('foo.png',bbox_inches='tight')
+    axis.plot(xs, ys, linewidth=0.25, alpha=0.3)
     
 def main(argv):
     dss = {}
