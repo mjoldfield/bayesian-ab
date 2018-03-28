@@ -111,7 +111,7 @@ def mk_report(name, scores, score_by_swap, n_tries, best_arm):
     norm_score = score_by_swap['n'] / (0.5 * n)
     swap_score = score_by_swap['r'] / (0.5 * n)
     
-    print("%-12s %8.3f %8.3f    %6.3f   %6d %6d %6d   %6.3f   %6.3f"
+    print("%-12s %8.3f %8.3f    %6.3f   %6d %6d %6d   %8.3f   %6.3f"
           % (name, norm_score, swap_score, f_arm1,
              scores[i_lq], scores[i_med], scores[i_uq], score_mean, f_bestarm))
     

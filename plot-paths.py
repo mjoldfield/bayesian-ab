@@ -2,6 +2,8 @@ import sys
 import json
 import re
 
+import argparse
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -108,4 +110,9 @@ def main(argv):
     plot_all(dss)
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+
+    args = parser.parse_args()
+    
     main(sys.argv)    
