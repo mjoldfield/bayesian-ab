@@ -1,0 +1,7 @@
+#! /bin/sh
+
+rm -rf plots
+mkdir  plots
+
+python3 ./plot-rep-data.py
+mv rnd-*.pdf rnd-*.png plots

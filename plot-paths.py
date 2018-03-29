@@ -29,7 +29,7 @@ def tag_order(tag):
     return ti['order']
 
 
-def plot_all(dss):
+def plot_all(dss, outstem, title):
 
     n_tags = len(dss)
     tags = list(dss.keys())
@@ -48,10 +48,13 @@ def plot_all(dss):
     w2 = int((hat_width - 1) / 2)
     cxs = np.array(range(w2,n-w2))
 
-    for fs,dpi,file in [((6,4),1200,'foo.pdf'), ((6,4),150,'foo.png')]:
+    for fs,dpi,suffix in [((6,4),1200,'pdf'), ((6,4),150,'png')]:
 
         fig, axes = plt.subplots(3,n_tags, squeeze=False
                                  , sharex='all', sharey='row', figsize=fs, dpi=dpi)
+
+        if title is not None:
+            fig.suptitle(title)
     
         axes[0,0].set_ylabel('Total Score',   fontsize=7)        
         axes[1,0].set_ylabel('pr(H_2|D)',     fontsize=7)
@@ -77,6 +80,7 @@ def plot_all(dss):
 
         #plt.show()
 
+        file = outstem + '.' + suffix
         fig.savefig(file,bbox_inches='tight')
 
 def plot_thing(axis, xs, ds, k, smooth, jitter):
@@ -94,25 +98,39 @@ def plot_thing(axis, xs, ds, k, smooth, jitter):
         
     axis.plot(xs, ys, linewidth=0.25, alpha=0.3)
     
-def main(argv):
+def main(files, algos, outstem, title):
     dss = {}
     
-    for file in argv[1:]:
+    for file in files:
         bits = file.split('-')
         tag = bits[-3]
 
+        if algos is not None and tag not in algos:
+            continue
+        
         if tag not in dss:
             dss[tag] = []
 
         with open(file, 'r') as fp:
             dss[tag].append(json.load(fp))
 
-    plot_all(dss)
+    plot_all(dss, outstem, title)
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser()
+    p = argparse.ArgumentParser()
 
-    args = parser.parse_args()
+    p.add_argument(dest='filenames', metavar='filename', nargs='*')
+
+    p.add_argument('--algo', metavar='algorithm', required=False,
+                   dest='algos', action='append')
+
+    p.add_argument('-o', '--outstem', required=True
+                   , action='store', dest='outstem')
+
+    p.add_argument('-t', '--title',  required=False
+                   , action='store', dest='title')
+
+    args = p.parse_args()
     
-    main(sys.argv)    
+    main(args.filenames, args.algos, args.outstem, args.title)    
