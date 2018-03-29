@@ -3,10 +3,29 @@
 rm -rf plots
 mkdir  plots
 
-#python3 ./plot-rep-data.py
-#mv rnd-*.pdf rnd-*.png plots
+python3 ./plot-rep-data.py
+mv rnd-*.pdf rnd-*.png plots
 
 STD_ALGOS='--algo=ucb1 --algo=aeg --algo=bayes --algo=rnd'
+
+python3 ./plot-paths.py --outstem plots/paths-100-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
+  log/std-000000-0.100-0.010-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-100-0_03 --title='pA = 0.10, pB = 0.03' $STD_ALGOS \
+  log/std-000000-0.100-0.030-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-100-0_09 --title='pA = 0.10, pB = 0.09' $STD_ALGOS \
+  log/std-000000-0.100-0.090-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-100-0_11 --title='pA = 0.10, pB = 0.11' $STD_ALGOS \
+  log/std-000000-0.100-0.110-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-100-0_30 --title='pA = 0.10, pB = 0.30' $STD_ALGOS \
+  log/std-000000-0.100-0.300-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-100-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
+  log/std-000000-0.100-0.900-000100-000100*
+
 python3 ./plot-paths.py --outstem plots/paths-1000-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
   log/std-000000-0.100-0.010-001000-000100*
 
@@ -25,3 +44,26 @@ python3 ./plot-paths.py --outstem plots/paths-1000-0_30 --title='pA = 0.10, pB =
 python3 ./plot-paths.py --outstem plots/paths-1000-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
   log/std-000000-0.100-0.900-001000-000100*
 
+python3 ./plot-paths.py --outstem plots/paths-10000-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
+  log/std-000000-0.100-0.010-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-10000-0_03 --title='pA = 0.10, pB = 0.03' $STD_ALGOS \
+  log/std-000000-0.100-0.030-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-10000-0_09 --title='pA = 0.10, pB = 0.09' $STD_ALGOS \
+  log/std-000000-0.100-0.090-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-10000-0_11 --title='pA = 0.10, pB = 0.11' $STD_ALGOS \
+  log/std-000000-0.100-0.110-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-10000-0_30 --title='pA = 0.10, pB = 0.30' $STD_ALGOS \
+  log/std-000000-0.100-0.300-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-10000-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
+  log/std-000000-0.100-0.900-010000-000100*
+
+python3 ./plot-res.py --title '' --outstem plots/res-100   $STD_ALGOS res/std-000000-0.100-0.*-000100-000100.json
+
+python3 ./plot-res.py --title '' --outstem plots/res-1000  $STD_ALGOS res/std-000000-0.100-0.*-001000-000100.json
+
+python3 ./plot-res.py --title '' --outstem plots/res-10000 $STD_ALGOS res/std-000000-0.100-0.*-010000-000100.json

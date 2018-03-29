@@ -2,14 +2,16 @@ import sys
 import json
 import re
 
+import argparse
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 def tag_info(tag):
     i = { 'aeg':   (50, "AEG")
         , 'ucb1':  (60, "UCB 1")
-        , 'bayes': (10,  "Bayes 1")
-        , 'rnd':   (20,  "Bayes 2")
+        , 'bayes': (10,  "Bayes")
+        , 'rnd':   (20,  "Bayes Rnd")
         , 'blr':   (30, "Gr Exp 1")
         , 'bls':   (40, "Gr Exp 2")
     }
@@ -57,9 +59,9 @@ def tidy_keys(d):
 
     return tidy_d, common_keys
 
-def plot_all(lines, title):
+def plot_all(lines, title, outstem):
 
-    for fs,dpi,file in [((6,4),150,'foo.png')]: # [((6,4),1200,'foo.pdf') ]: 
+    for fs,dpi,suffix in [((6,4),150,'png'), ((6,4),1200,'pdf') ]: 
 
         fig, axes = plt.subplots(1,1, squeeze=False
                                  , sharex='all', sharey='row', figsize=fs, dpi=dpi)
@@ -75,11 +77,12 @@ def plot_all(lines, title):
             xs = np.array([ x for x,y in line ])
             ys = np.array([ y for x,y in line ])
 
-            axis.plot(xs, ys, 'o-', linewidth=0.25, alpha=0.8, label=label)
+            axis.plot(xs, ys, 'o-', linewidth=1.0, alpha=0.5, label=label)
 
         axis.legend()
-        plt.show()
+#        plt.show()
 
+        file = outstem + '.' + suffix
         fig.savefig(file,bbox_inches='tight')
 
 def pp_warmup(n):
@@ -88,11 +91,11 @@ def pp_warmup(n):
     else:
         return '%d warmup steps' % n
     
-def main(argv):
+def main(files, algos, outstem, title):
 
     lines = {}
     
-    for file in argv[1:]:
+    for file in files:
 
         bits = file.split('-')
         [tag, sn_warmup, sp0, sp1, sn_steps, *rest] = bits
@@ -108,6 +111,10 @@ def main(argv):
             ds = json.load(fp)
 
         for algo in sorted(list(ds.keys()), key=tag_order):
+
+            if algos is not None and algo not in algos:
+                continue
+
             v = ds[algo]
 
             f_good_arm = v['f_good_arm']
@@ -123,7 +130,25 @@ def main(argv):
 
     lines, common_keys = tidy_keys(lines)
 
-    plot_all(lines, common_keys)
+    if title is None:
+        title = common_keys
+
+    plot_all(lines, title, outstem)
             
 if __name__ == "__main__":
-    main(sys.argv)    
+    p = argparse.ArgumentParser()
+
+    p.add_argument(dest='filenames', metavar='filename', nargs='*')
+
+    p.add_argument('--algo', metavar='algorithm', required=False,
+                   dest='algos', action='append')
+
+    p.add_argument('-o', '--outstem', required=True
+                   , action='store', dest='outstem')
+
+    p.add_argument('-t', '--title',  required=False
+                   , action='store', dest='title')
+
+    args = p.parse_args()
+
+    main(args.filenames, args.algos, args.outstem, args.title)    

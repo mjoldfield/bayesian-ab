@@ -116,6 +116,7 @@ def mk_report(name, scores, score_by_swap, n_tries, best_arm):
              scores[i_lq], scores[i_med], scores[i_uq], score_mean, f_bestarm))
     
     return { 'f_arm1':       f_arm1
+             , 'f_good_arm': f_bestarm
              , 'score_lq':   scores[i_lq]
              , 'score_med':  scores[i_med]
              , 'score_uq':   scores[i_uq]
