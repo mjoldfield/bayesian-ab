@@ -1,7 +1,27 @@
-#! /bin/sh
+#! /bin/sh -v
 
 rm -rf plots
 mkdir  plots
 
-python3 ./plot-rep-data.py
-mv rnd-*.pdf rnd-*.png plots
+#python3 ./plot-rep-data.py
+#mv rnd-*.pdf rnd-*.png plots
+
+STD_ALGOS='--algo=ucb1 --algo=aeg --algo=bayes --algo=rnd'
+python3 ./plot-paths.py --outstem plots/paths-1000-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
+  log/std-000000-0.100-0.010-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-1000-0_03 --title='pA = 0.10, pB = 0.03' $STD_ALGOS \
+  log/std-000000-0.100-0.030-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-1000-0_09 --title='pA = 0.10, pB = 0.09' $STD_ALGOS \
+  log/std-000000-0.100-0.090-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-1000-0_11 --title='pA = 0.10, pB = 0.11' $STD_ALGOS \
+  log/std-000000-0.100-0.110-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-1000-0_30 --title='pA = 0.10, pB = 0.30' $STD_ALGOS \
+  log/std-000000-0.100-0.300-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-1000-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
+  log/std-000000-0.100-0.900-001000-000100*
+

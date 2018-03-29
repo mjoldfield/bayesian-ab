@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 def tag_info(tag):
     i = { 'aeg':   (50, "AEG")
         , 'ucb1':  (60, "UCB 1")
-        , 'bayes': (10,  "Bayes 1")
-        , 'rnd':   (20,  "Bayes 2")
+        , 'bayes': (10,  "Bayes")
+        , 'rnd':   (20,  "Bayes Rnd")
         , 'blr':   (30, "Gr Exp 1")
         , 'bls':   (40, "Gr Exp 2")
     }
