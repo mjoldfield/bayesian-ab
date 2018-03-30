@@ -85,6 +85,22 @@ def plot_all(lines, title, outstem):
         file = outstem + '.' + suffix
         fig.savefig(file,bbox_inches='tight')
 
+def dump_table(lines, title, outstem):
+
+    n_algos = len(lines)
+    
+    table = "table(spaced).\n"    
+
+    table += "_|/2. Algorithm|\%d. Probability| \\\n" % n_algos
+
+    line0 = list(lines.values())[0]
+    table += '|'.join([ '_' ] + [ '%0.2f' % pr for pr,y in line0 ] + [ " \\\n" ])
+    
+    for label,line in lines.items():
+        table += '|'.join([ '', '_. ' + label ] + [ '%0.3f' % y for pr,y in line ] + [ " \\\n" ])
+
+    print(table)
+
 def pp_warmup(n):
     if n == 0:
         return 'No warmup'
@@ -134,6 +150,8 @@ def main(files, algos, outstem, title):
         title = common_keys
 
     plot_all(lines, title, outstem)
+
+    dump_table(lines, title, outstem)
             
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
