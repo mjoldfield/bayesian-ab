@@ -17,13 +17,12 @@ def std_tests():
   algos = [   [ 'ucb1',      lambda: UCB1([],[]) ]
               , [ 'aeg',     lambda: AnnealingEpsilonGreedy([],[]) ]
               , [ 'bayes',   lambda: BayesAB('min_n')   ]
-#              , [ 'ble',     lambda: BayesAB('min_ph2') ]
               , [ 'blr',     lambda: BayesAB('max_tr')  ]
               , [ 'bls',     lambda: BayesAB('max_tr1') ]
               , [ 'rnd',     lambda: BayesAB('random')  ]
   ]
 
-  n_runs = 100
+  n_runs = 10000
   for n_warmup in [ 0, 1000 ]:
     for n_steps in [ 100, 1000, 10000 ]:
       for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:

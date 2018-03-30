@@ -8,6 +8,8 @@ mv rnd-*.pdf rnd-*.png plots
 
 STD_ALGOS='--algo=ucb1 --algo=aeg --algo=bayes --algo=rnd'
 
+# paths: no warmup
+
 python3 ./plot-paths.py --outstem plots/paths-100-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
   log/std-000000-0.100-0.010-000100-000100*
 
@@ -62,8 +64,149 @@ python3 ./plot-paths.py --outstem plots/paths-10000-0_30 --title='pA = 0.10, pB 
 python3 ./plot-paths.py --outstem plots/paths-10000-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
   log/std-000000-0.100-0.900-010000-000100*
 
-python3 ./plot-res.py --title '' --outstem plots/res-100   $STD_ALGOS res/std-000000-0.100-0.*-000100-000100.json
+# results: no warmup
 
-python3 ./plot-res.py --title '' --outstem plots/res-1000  $STD_ALGOS res/std-000000-0.100-0.*-001000-000100.json
+python3 ./plot-res.py --title 'Performance after 100 tosses'    --outstem plots/res-100   $STD_ALGOS \
+  res/std-000000-0.100-0.*-000100-000100.json
 
-python3 ./plot-res.py --title '' --outstem plots/res-10000 $STD_ALGOS res/std-000000-0.100-0.*-010000-000100.json
+python3 ./plot-res.py --title 'Performance after 1000 tosses'  --outstem plots/res-1000  $STD_ALGOS \
+  res/std-000000-0.100-0.*-001000-000100.json
+
+python3 ./plot-res.py --title 'Performance after 10000 tosses' --outstem plots/res-10000 $STD_ALGOS \
+	res/std-000000-0.100-0.*-010000-000100.json
+
+# paths: warmup
+
+python3 ./plot-paths.py --outstem plots/paths-w-100-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
+  log/std-001000-0.100-0.010-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-100-0_03 --title='pA = 0.10, pB = 0.03' $STD_ALGOS \
+  log/std-001000-0.100-0.030-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-100-0_09 --title='pA = 0.10, pB = 0.09' $STD_ALGOS \
+  log/std-001000-0.100-0.090-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-100-0_11 --title='pA = 0.10, pB = 0.11' $STD_ALGOS \
+  log/std-001000-0.100-0.110-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-100-0_30 --title='pA = 0.10, pB = 0.30' $STD_ALGOS \
+  log/std-001000-0.100-0.300-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-100-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
+  log/std-001000-0.100-0.900-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-1000-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
+  log/std-001000-0.100-0.010-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-1000-0_03 --title='pA = 0.10, pB = 0.03' $STD_ALGOS \
+  log/std-001000-0.100-0.030-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-1000-0_09 --title='pA = 0.10, pB = 0.09' $STD_ALGOS \
+  log/std-001000-0.100-0.090-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-1000-0_11 --title='pA = 0.10, pB = 0.11' $STD_ALGOS \
+  log/std-001000-0.100-0.110-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-1000-0_30 --title='pA = 0.10, pB = 0.30' $STD_ALGOS \
+  log/std-001000-0.100-0.300-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-1000-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
+  log/std-001000-0.100-0.900-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-10000-0_01 --title='pA = 0.10, pB = 0.01' $STD_ALGOS \
+  log/std-001000-0.100-0.010-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-10000-0_03 --title='pA = 0.10, pB = 0.03' $STD_ALGOS \
+  log/std-001000-0.100-0.030-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-10000-0_09 --title='pA = 0.10, pB = 0.09' $STD_ALGOS \
+  log/std-001000-0.100-0.090-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-10000-0_11 --title='pA = 0.10, pB = 0.11' $STD_ALGOS \
+  log/std-001000-0.100-0.110-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-10000-0_30 --title='pA = 0.10, pB = 0.30' $STD_ALGOS \
+  log/std-001000-0.100-0.300-010000-000100*
+
+python3 ./plot-paths.py --outstem plots/paths-w-10000-0_90 --title='pA = 0.10, pB = 0.90' $STD_ALGOS \
+  log/std-001000-0.100-0.900-010000-000100*
+
+# results: warmup
+
+python3 ./plot-res.py --title '1000 tosses of coin A, then 100 mixed'   --outstem plots/res-w-100   $STD_ALGOS \
+  res/std-001000-0.100-0.*-000100-000100.json
+
+python3 ./plot-res.py --title '1000 tosses of coin A, then 1000 mixed'  --outstem plots/res-w-1000  $STD_ALGOS \
+  res/std-001000-0.100-0.*-001000-000100.json
+
+python3 ./plot-res.py --title '1000 tosses of coin A, then 10000 mixed' --outstem plots/res-w-10000 $STD_ALGOS \
+	res/std-001000-0.100-0.*-010000-000100.json
+
+CUR_ALGOS='--algo=blr --algo=bls --algo=bayes --algo=rnd'
+
+
+python3 ./plot-paths.py --outstem plots/cur-paths-100-0_01 --title='pA = 0.10, pB = 0.01' $CUR_ALGOS \
+  log/std-000000-0.100-0.010-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-100-0_03 --title='pA = 0.10, pB = 0.03' $CUR_ALGOS \
+  log/std-000000-0.100-0.030-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-100-0_09 --title='pA = 0.10, pB = 0.09' $CUR_ALGOS \
+  log/std-000000-0.100-0.090-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-100-0_11 --title='pA = 0.10, pB = 0.11' $CUR_ALGOS \
+  log/std-000000-0.100-0.110-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-100-0_30 --title='pA = 0.10, pB = 0.30' $CUR_ALGOS \
+  log/std-000000-0.100-0.300-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-100-0_90 --title='pA = 0.10, pB = 0.90' $CUR_ALGOS \
+  log/std-000000-0.100-0.900-000100-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-1000-0_01 --title='pA = 0.10, pB = 0.01' $CUR_ALGOS \
+  log/std-000000-0.100-0.010-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-1000-0_03 --title='pA = 0.10, pB = 0.03' $CUR_ALGOS \
+  log/std-000000-0.100-0.030-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-1000-0_09 --title='pA = 0.10, pB = 0.09' $CUR_ALGOS \
+  log/std-000000-0.100-0.090-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-1000-0_11 --title='pA = 0.10, pB = 0.11' $CUR_ALGOS \
+  log/std-000000-0.100-0.110-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-1000-0_30 --title='pA = 0.10, pB = 0.30' $CUR_ALGOS \
+  log/std-000000-0.100-0.300-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-1000-0_90 --title='pA = 0.10, pB = 0.90' $CUR_ALGOS \
+  log/std-000000-0.100-0.900-001000-000100*
+
+
+python3 ./plot-res.py --title 'Performance after 100 tosses'    --outstem plots/all-res-100   \
+  res/std-000000-0.100-0.*-000100-000100.json
+
+python3 ./plot-res.py --title 'Performance after 1000 tosses'  --outstem plots/all-res-1000   \
+  res/std-000000-0.100-0.*-001000-000100.json
+
+python3 ./plot-res.py --title 'Performance after 10000 tosses' --outstem plots/all-res-10000  \
+	res/std-000000-0.100-0.*-010000-000100.json
+
+
+python3 ./plot-paths.py --outstem plots/cur-paths-w-1000-0_01 --title='pA = 0.10, pB = 0.01' $CUR_ALGOS \
+  log/std-001000-0.100-0.010-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-w-1000-0_03 --title='pA = 0.10, pB = 0.03' $CUR_ALGOS \
+  log/std-001000-0.100-0.030-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-w-1000-0_09 --title='pA = 0.10, pB = 0.09' $CUR_ALGOS \
+  log/std-001000-0.100-0.090-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-w-1000-0_11 --title='pA = 0.10, pB = 0.11' $CUR_ALGOS \
+  log/std-001000-0.100-0.110-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-w-1000-0_30 --title='pA = 0.10, pB = 0.30' $CUR_ALGOS \
+  log/std-001000-0.100-0.300-001000-000100*
+
+python3 ./plot-paths.py --outstem plots/cur-paths-w-1000-0_90 --title='pA = 0.10, pB = 0.90' $CUR_ALGOS \
+  log/std-001000-0.100-0.900-001000-000100*
+
