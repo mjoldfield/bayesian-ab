@@ -28,6 +28,13 @@ def tag_order(tag):
     ti = tag_info(tag)
     return ti['order']
 
+def var_info(tag):
+    v = {   'f_good_arm': ('f', 'Fraction of good tosses')
+          , 'score_mean': ('s', 'Total number of heads')
+    }
+
+    return v[tag]
+    
 def tidy_keys(d):
 
     kss = list(d.keys())
@@ -85,13 +92,15 @@ def plot_all(lines, title, outstem):
         file = outstem + '.' + suffix
         fig.savefig(file,bbox_inches='tight')
 
-def dump_table(lines, title, outstem):
+def dump_table(lines, title, outstem, kt):
 
+    ss, t = var_info(kt)
+    
     n_algos = len(lines)
     
     table = "table(spaced).\n"    
 
-    table += "_|/2. Algorithm|\%d. Probability| \\\n" % n_algos
+    table += "_|/2. Algorithm|\%d. %s| \\\n" % (n_algos, t)
 
     line0 = list(lines.values())[0]
     table += '|'.join([ '_' ] + [ '%0.2f' % pr for pr,y in line0 ] + [ " \\\n" ])
@@ -99,7 +108,10 @@ def dump_table(lines, title, outstem):
     for label,line in lines.items():
         table += '|'.join([ '', '_. ' + label ] + [ '%0.3f' % y for pr,y in line ] + [ " \\\n" ])
 
-    print(table)
+    file = '.'.join([outstem, ss, 'table'])
+
+    with open(file, 'w') as fp:
+        fp.write(table)
 
 def pp_warmup(n):
     if n == 0:
@@ -109,10 +121,20 @@ def pp_warmup(n):
     
 def main(files, algos, outstem, title):
 
+    # key idea is to accumulate information for variable v
+    # changing in context c as
+    #    lines[v][c] = [ (p0,q0), .. ]
+    # where
+    #    p0 is prob of second coin;
+    #    q0 is corresponding value of v
+    #    v  is string (name of variable in json)
+    #    c  is a tuple so we can infer sensible titles
+    
     lines = {}
     
     for file in files:
 
+        # unpack information in filename
         bits = file.split('-')
         [tag, sn_warmup, sp0, sp1, sn_steps, *rest] = bits
 
@@ -123,6 +145,7 @@ def main(files, algos, outstem, title):
 
         n_steps = int(sn_steps)
 
+        # load data from file
         with open(file, 'r') as fp:
             ds = json.load(fp)
 
@@ -131,27 +154,41 @@ def main(files, algos, outstem, title):
             if algos is not None and algo not in algos:
                 continue
 
-            v = ds[algo]
-
-            f_good_arm = v['f_good_arm']
-
+            # make a pretty version of the key we use for this
+            # plot
             k = (tag_name(algo)
                  , pp_warmup(n_warmup)
                  ,'%d steps' % n_steps)
 
-            if k not in lines:
-                lines[k] = []
+            v = ds[algo]
 
-            lines[k].append((p1,f_good_arm))
+            # iterate over quantities of interest
+            for kt in [ 'f_good_arm', 'score_mean' ]:
+                y = v[kt]
 
-    lines, common_keys = tidy_keys(lines)
+                if kt not in lines:
+                    lines[kt] = {} 
+                
+                if k not in lines[kt]:
+                    lines[kt][k] = []
 
-    if title is None:
-        title = common_keys
+                lines[kt][k].append((p1,y))
 
-    plot_all(lines, title, outstem)
+    # now for each line on graph/row in table
+    for kt in lines.keys():
 
-    dump_table(lines, title, outstem)
+        # look at context and extract common elements of tuple
+        ls, common_keys = tidy_keys(lines[kt])
+
+        if title is None:
+            title = common_keys
+
+        # only plot one variable...
+        if kt == 'f_good_arm':
+            plot_all(ls,  title, outstem)
+
+        # ..but tabulate them all
+        dump_table(ls, title, outstem, kt)
             
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
