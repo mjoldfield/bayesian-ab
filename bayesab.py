@@ -24,8 +24,9 @@ def select_on(a,b):
 
 
 class BayesAB():
-  def __init__(self, exp_method=''):
+  def __init__(self, exp_method='', marginalize=False):
     self.exp_method    = exp_method
+    self.marginalize   = marginalize
     return
 
   def initialize(self, n_arms):
@@ -48,12 +49,18 @@ class BayesAB():
     k2 = a2['k']
 
     log_ratio = self.evidence_ratio(n1,k1, n2,k2)
+
+    # log_ratio unlikely to go very -ve (H1 only beats
+    # H2 by Occam factor), so this should be well behaved:
     self.pr_h2 = 1.0 / (1.0 + math.exp(-log_ratio))
 
     # log_ratio +ve => h2 more probable than h1
     #               => good to exploit and not explore
 
-    explore = log_ratio < 0.0
+    if self.marginalize:
+      explore = random.random() > self.pr_h2
+    else:
+      explore = log_ratio < 0.0
 
     if explore:
       if   self.exp_method == 'random':
@@ -77,6 +84,8 @@ class BayesAB():
         return 1 - select_on((q1 + 1) * (n2 + 2), (q2 + 1) * (n1 + 2))
       
       elif self.exp_method == 'min_ph2':
+        # algebra shows this is the same as min_tr
+        
         # delta is most likely outcome of the toss
         if (2 * (k1 + k2) >= (n1 + n2)):
           delta = 1
