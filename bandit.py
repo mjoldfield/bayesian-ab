@@ -6,9 +6,11 @@ from scipy import stats
 
 from bernoulli import BernoulliArm
 
-from bayesab   import BayesAB
+#from bayesab   import BayesAB
 from ucb1      import UCB1
 from annealing import AnnealingEpsilonGreedy
+
+import bayes
 
 def argmax(xs):
   return max(enumerate(xs), key=lambda x:x[1])[0]
@@ -16,13 +18,24 @@ def argmax(xs):
 def std_tests():
   algos = [   [ 'ucb1',      lambda: UCB1([],[]) ]
               , [ 'aeg',     lambda: AnnealingEpsilonGreedy([],[]) ]
-              , [ 'bayes',   lambda: BayesAB('min_n')   ]
-              , [ 'blr',     lambda: BayesAB('max_tr')  ]
-              , [ 'bls',     lambda: BayesAB('max_tr1') ]
-              , [ 'rnd',     lambda: BayesAB('random')  ]
+#              , [ 'bayes',   lambda: bayes.Bayes() ]
+#              , [ 'rnd',     lambda: bayes.BayesRnd() ]
+#              , [ 'bls',     lambda: bayes.BayesExtExpl() ]
+              , [ 'bayesT',  lambda: bayes.Bayes(True) ]
+              , [ 'rndT',    lambda: bayes.BayesRnd(True) ]
+              , [ 'blsT',    lambda: bayes.BayesExtExpl(True) ]
+              , [ 'bayesF',  lambda: bayes.Bayes(False) ]
+              , [ 'rndF',    lambda: bayes.BayesRnd(False) ]
+              , [ 'blsF',    lambda: bayes.BayesExtExpl(False) ]
+#              , [ 'bayes',   lambda: BayesAB('min_n')   ]
+#              , [ 'bls',     lambda: BayesAB('max_tr1') ]
+#              , [ 'rnd',     lambda: BayesAB('random')  ]
+#              , [ 'bayesE',   lambda: BayesAB('min_n', False, True)   ]
+#              , [ 'blsE',     lambda: BayesAB('max_tr1', False, True) ]
+#              , [ 'rndE',     lambda: BayesAB('random', False, True)  ]
   ]
 
-  n_runs = 10000
+  n_runs = 1000
   for n_warmup in [ 0, 1000 ]:
     for n_steps in [ 100, 1000, 10000 ]:
       for p in [0.01, 0.03, 0.09, 0.11, 0.3, 0.9]:
@@ -156,4 +169,5 @@ def run_test(algo, arms, warmups, n_steps):
     return results
 
 if __name__ == "__main__":
+  random.seed(1770)
   std_tests()

@@ -24,9 +24,10 @@ def select_on(a,b):
 
 
 class BayesAB():
-  def __init__(self, exp_method='', marginalize=False):
+  def __init__(self, exp_method='', marginalize=False, expl_on_tie=False):
     self.exp_method    = exp_method
     self.marginalize   = marginalize
+    self.expl_on_tie   = expl_on_tie
     return
 
   def initialize(self, n_arms):
@@ -58,7 +59,9 @@ class BayesAB():
     #               => good to exploit and not explore
 
     if self.marginalize:
-      explore = random.random() > self.pr_h2
+      explore = random.random() < self.pr_h2
+    elif self.expl_on_tie:
+      explore = log_ratio <= 0.0
     else:
       explore = log_ratio < 0.0
 
