@@ -69,7 +69,7 @@ python3 ./plot-paths.py --outstem plots/paths-10000-0_90 --title='pA = 0.10, pB 
 python3 ./plot-res.py --title 'Performance after 100 tosses'    --outstem plots/res-100   $STD_ALGOS \
   res/std-000000-0.100-0.*-000100-*.json
 
-python3 ./plot-res.py --title 'Performance after 1000 tosses'  --outstem plots/res-1000  $STD_ALGOS \
+Python3 ./plot-res.py --title 'Performance after 1000 tosses'  --outstem plots/res-1000  $STD_ALGOS \
   res/std-000000-0.100-0.*-001000-*.json
 
 python3 ./plot-res.py --title 'Performance after 10000 tosses' --outstem plots/res-10000 $STD_ALGOS \

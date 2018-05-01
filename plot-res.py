@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 def tag_info(tag):
     i = { 'aeg':   (50, "AEG")
         , 'ucb1':  (60, "UCB 1")
-        , 'bayes': (10,  "Bayes")
-        , 'rnd':   (20,  "Bayes Rnd")
+        , 'bayes': (10, "Bayes")
+        , 'rnd':   (20, "Bayes_Rnd")
         , 'blr':   (30, "Gr Exp 1")
         , 'bls':   (40, "Gr Exp 2")
     }
@@ -97,18 +97,36 @@ def dump_table(lines, title, outstem, kt):
     ss, t = var_info(kt)
     
     n_algos = len(lines)
-    
-    table = "table(spaced).\n"    
-
-    table += "_|/2. Algorithm|\%d. %s| \\\n" % (n_algos, t)
-
     line0 = list(lines.values())[0]
-    table += '|'.join([ '_' ] + [ '%0.2f' % pr for pr,y in line0 ] + [ " \\\n" ])
+    n_coins = len(line0)
     
-    for label,line in lines.items():
-        table += '|'.join([ '', '_. ' + label ] + [ '%0.3f' % y for pr,y in line ] + [ " \\\n" ])
+    table = "table(cspaced_sml).\n"    
 
-    file = '.'.join([outstem, ss, 'table'])
+    table += "_|/2. Algorithm |\%d. Coin B | \\\n" % (n_coins)
+
+    table += '|'.join([ '_' ] + [ '%d%%' % int(100.0 * pr) for pr,y in line0 ] + [ " \\\n" ])
+
+    # work out best algorithm for this coin
+    best_alg = { pr: ('?',0) for pr,y in line0 }
+    for label,line in lines.items():
+        for pr,y in line:
+            (alg, best) = best_alg[pr]
+            if y > best:
+                best_alg[pr] = (label, y)
+
+    for label,line in lines.items():
+        cells = [ '', '_. ' + label ]
+        for pr,y in line:
+            cell = '%0.3f' % y
+            (alg,best) = best_alg[pr]
+            if label == alg:
+                cell = "*" + cell + "*"
+            cells.append(cell)
+        cells.append(" \\\n")
+
+        table += '|'.join(cells)
+
+    file = '-'.join([outstem, ss, 'table']) + '.inc'
 
     with open(file, 'w') as fp:
         fp.write(table)
