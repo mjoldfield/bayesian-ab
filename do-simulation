@@ -1,0 +1,7 @@
+#! /bin/sh -v
+
+rm -rf log res log.txt
+mkdir  log res
+
+time python3 -u ./bandit.py | tee log.txt
+
