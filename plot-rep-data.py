@@ -45,7 +45,7 @@ def plot_p(axis, p, pi, nsteps, label=False):
     line, = axis.plot(cs, linewidth=0.25, alpha=0.5, color="C{}".format(pi))
 
     if label:
-        line.set_label('%.2f' % p)
+        line.set_label('%d%%' % int(p * 100))
 
         
     
