@@ -10,10 +10,9 @@ import matplotlib.pyplot as plt
 def tag_info(tag):
     i = { 'aeg':   (50, "AEG")
         , 'ucb1':  (60, "UCB 1")
-        , 'bayes': (10,  "Bayes")
-        , 'rnd':   (20,  "Bayes Rnd")
-        , 'blr':   (30, "Gr Exp 1")
-        , 'bls':   (40, "Gr Exp 2")
+        , 'bayes': (10, "Bayes")
+        , 'rnd':   (20, "Bayes Rnd")
+        , 'bls':   (40, "Bayes Exp")
     }
 
     order, name = i[tag]
@@ -56,9 +55,9 @@ def plot_all(dss, outstem, title):
         if title is not None:
             fig.suptitle(title)
     
-        axes[0,0].set_ylabel('Total Score',   fontsize=7)        
-        axes[1,0].set_ylabel('pr(H_2|D)',     fontsize=7)
-        axes[2,0].set_ylabel('Average Coin',  fontsize=7)
+        axes[0,0].set_ylabel('Total Score',                    fontsize=7)        
+        axes[1,0].set_ylabel(r'$\mathrm{pr}(\mathscr{H}_2|D)$',  fontsize=7)
+        axes[2,0].set_ylabel('Average Coin',                   fontsize=7)
 
         col = 0
         for tag in sorted(tags, key=tag_order):
