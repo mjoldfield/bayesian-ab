@@ -11,8 +11,8 @@ def tag_info(tag):
     i = { 'aeg':   (50, "AEG")
         , 'ucb1':  (60, "UCB 1")
         , 'bayes': (10, "Bayes")
-        , 'rnd':   (20, "Bayes Rnd")
-        , 'bls':   (40, "Bayes Ext")
+        , 'rnd':   (20, "Bayes Rnd")
+        , 'bls':   (40, "Bayes Ext")
     }
 
     order, name = i[tag]
